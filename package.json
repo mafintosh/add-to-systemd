@@ -1,0 +1,26 @@
+{
+  "name": "add-to-systemd",
+  "version": "0.0.0",
+  "description": "Small command line tool to simply add a service to systemd",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "standard": "^8.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/add-to-systemd.git"
+  },
+  "bin": {
+    "add-to-systemd": "./index.js"
+  },
+  "scripts": {
+    "test": "standard"
+  },
+  "author": "Mathias Buus (@mafintosh)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/add-to-systemd/issues"
+  },
+  "homepage": "https://github.com/mafintosh/add-to-systemd"
+}
