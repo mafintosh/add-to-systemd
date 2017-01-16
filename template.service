@@ -4,3 +4,6 @@ After=syslog.target network.target remote-fs.target nss-lookup.target
 [Service]
 ExecStart={command}
 Restart=always
+
+[Install]
+WantedBy=multi-user.target
