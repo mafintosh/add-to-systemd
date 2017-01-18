@@ -15,6 +15,17 @@ add-to-systemd my-new-service "node server.js --port 8080"
 systemctl start my-new-service
 ```
 
+Full list of options include
+
+```
+Usage: add-to-systemd name [options] command...
+
+  --user, -u  [user]      User the service will run as
+  --cwd,  -c  [dir]       Set the cwd of the service
+  --env,  -e  [name=val]  Add env vars to the service
+
+```
+
 ## License
 
 MIT
