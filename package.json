@@ -3,7 +3,9 @@
   "version": "1.0.1",
   "description": "Small command line tool to simply add a service to systemd",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "minimist": "^1.2.0"
+  },
   "devDependencies": {
     "standard": "^8.6.0"
   },
