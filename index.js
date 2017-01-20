@@ -25,7 +25,8 @@ for (; i < process.argv.length; i++) {
 }
 
 var argv = minimist(process.argv.slice(0, i), {
-  alias: {user: 'u', cwd: 'c', env: 'e'}
+  alias: {user: 'u', cwd: 'c', env: 'e'},
+  default: {cwd: process.cwd()}
 })
 
 var TEMPLATE = fs.readFileSync(path.join(__dirname, 'template.service'), 'utf-8')
