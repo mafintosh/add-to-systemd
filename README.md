@@ -10,7 +10,7 @@ npm install -g add-to-systemd
 
 ```shell
 # add a node server to systemd (will start it on boot)
-add-to-systemd my-new-service "node server.js --port 8080"
+add-to-systemd my-new-service "$(which node) server.js --port 8080"
 # lets start it right away
 systemctl start my-new-service
 ```
