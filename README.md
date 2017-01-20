@@ -21,7 +21,7 @@ Full list of options include
 Usage: add-to-systemd name [options] command...
 
   --user, -u  [user]      User the service will run as
-  --cwd,  -c  [dir]       Set the cwd of the service
+  --cwd,  -c  [dir]       Set the cwd of the service (Defaults to the current directory)
   --env,  -e  [name=val]  Add env vars to the service
 
 ```
