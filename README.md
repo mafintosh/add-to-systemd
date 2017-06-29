@@ -22,6 +22,7 @@ Usage: add-to-systemd name [options] command...
 
   --user, -u  [user]      User the service will run as
   --cwd,  -c  [dir]       Set the cwd of the service (Defaults to the current directory)
+  --nice, -n  [integer]   Set the process niceness
   --env,  -e  [name=val]  Add env vars to the service
 
 ```
