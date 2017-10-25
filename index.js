@@ -36,6 +36,7 @@ if (!name) {
   console.error()
   console.error('  --user, -u  [user]      User the service will run as')
   console.error('  --cwd,  -c  [dir]       Set the cwd of the service')
+  console.error('  --nice, -n  [integer]   Set the process niceness')
   console.error('  --env,  -e  [name=val]  Add env vars to the service')
   console.error()
   process.exit(1)
@@ -48,6 +49,7 @@ if (!fs.existsSync('/lib/systemd/system/')) {
 var opts = ''
 if (argv.user) opts += 'User=' + argv.user + '\n'
 if (argv.cwd) opts += 'WorkingDirectory=' + fs.realpathSync(argv.cwd) + '\n'
+if (argv.nice) opts += 'Nice=' + argv.nice + '\n'
 if (argv.env) {
   [].concat(argv.env).forEach(function (e) {
     opts += 'Environment=' + e + '\n'
