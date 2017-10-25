@@ -41,8 +41,8 @@ if (!name) {
   console.error()
   process.exit(1)
 }
-if (!fs.existsSync('/lib/systemd/system/')) {
-  console.error('/lib/systemd/system/ does not exist. Is systemd installed?')
+if (!fs.existsSync('/etc/systemd/system/')) {
+  console.error('/etc/systemd/system/ does not exist. Is systemd installed?')
   process.exit(2)
 }
 
@@ -59,5 +59,5 @@ if (argv.env) {
 var command = process.argv.slice(i).join(' ')
 var service = TEMPLATE.replace('{command}', command).replace('{options}', opts)
 
-fs.writeFileSync('/lib/systemd/system/' + name + '.service', service)
+fs.writeFileSync('/etc/systemd/system/' + name + '.service', service)
 cp.spawn('systemctl', ['enable', name + '.service'], {stdio: 'inherit'})
