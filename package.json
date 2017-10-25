@@ -1,6 +1,6 @@
 {
   "name": "add-to-systemd",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Small command line tool to simply add a service to systemd",
   "main": "index.js",
   "dependencies": {
