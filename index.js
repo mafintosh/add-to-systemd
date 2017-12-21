@@ -49,7 +49,10 @@ if (!fs.existsSync('/etc/systemd/system/')) {
   process.exit(2)
 }
 
+var v = Number(cp.execSync('systemd --version').toString().trim().split('\n')[0].trim().split(' ').pop() || 0)
+
 var opts = ''
+var uopts = ''
 if (argv.user) opts += 'User=' + argv.user + '\n'
 if (argv.cwd) opts += 'WorkingDirectory=' + fs.realpathSync(argv.cwd) + '\n'
 if (argv.nice) opts += 'Nice=' + argv.nice + '\n'
@@ -59,7 +62,10 @@ if (argv.env) {
   })
 }
 if (argv.restart) opts += 'RestartSec=' + argv.restart + '\n'
-if (argv.N || argv['rate-limit'] === false) opts += 'StartLimitIntervalSec=0\n'
+if (argv.N || argv['rate-limit'] === false) {
+  if (v < 230) opts += 'StartLimitInterval=0\n'
+  else uopts += 'StartLimitIntervalSec=0\n'
+}
 
 var options = [].concat(argv.option || [])
 
@@ -68,7 +74,7 @@ options.forEach(function (pair) {
 })
 
 var command = process.argv.slice(i).join(' ')
-var service = TEMPLATE.replace('{command}', command).replace('{options}', opts)
+var service = TEMPLATE.replace('{command}', command).replace('{service-options}', opts).replace('{unit-options}', uopts)
 var filename = '/etc/systemd/system/' + name + '.service'
 
 fs.writeFileSync(filename, service)
