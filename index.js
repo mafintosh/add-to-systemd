@@ -25,7 +25,7 @@ for (; i < process.argv.length; i++) {
 }
 
 var argv = minimist(process.argv.slice(0, i), {
-  alias: {user: 'u', cwd: 'c', env: 'e'},
+  alias: {user: 'u', cwd: 'c', env: 'e', nice: 'n', restart: 'r', option: 'o'},
   default: {cwd: process.cwd()}
 })
 
@@ -34,10 +34,13 @@ var TEMPLATE = fs.readFileSync(path.join(__dirname, 'template.service'), 'utf-8'
 if (!name) {
   console.error('Usage: add-to-systemd name [options] command...')
   console.error()
-  console.error('  --user, -u  [user]      User the service will run as')
-  console.error('  --cwd,  -c  [dir]       Set the cwd of the service')
-  console.error('  --nice, -n  [integer]   Set the process niceness')
-  console.error('  --env,  -e  [name=val]  Add env vars to the service')
+  console.error('  -u, --user           [user]      User the service will run as')
+  console.error('  -c, --cwd            [dir]       Set the cwd of the service')
+  console.error('  -n, --nice           [integer]   Set the process niceness')
+  console.error('  -e, --env            [name=val]  Add env vars to the service')
+  console.error('  -r, --restart        [integer]   Wait this many secs when restarting')
+  console.error('  -N, --no-rate-limit              Disable restart rate limits')
+  console.error('  -o, --option         [name=val]   Set any systemd option')
   console.error()
   process.exit(1)
 }
@@ -55,9 +58,21 @@ if (argv.env) {
     opts += 'Environment=' + e + '\n'
   })
 }
+if (argv.restart) opts += 'RestartSec=' + argv.restart + '\n'
+if (argv.N || argv['rate-limit'] === false) opts += 'StartLimitIntervalSec=0\n'
+
+var options = [].concat(argv.option || [])
+
+options.forEach(function (pair) {
+  opts += pair + '\n'
+})
 
 var command = process.argv.slice(i).join(' ')
 var service = TEMPLATE.replace('{command}', command).replace('{options}', opts)
+var filename = '/etc/systemd/system/' + name + '.service' 
 
-fs.writeFileSync('/etc/systemd/system/' + name + '.service', service)
-cp.spawn('systemctl', ['enable', name + '.service'], {stdio: 'inherit'})
+fs.writeFileSync(filename, service)
+console.log('Wrote service file to: ' + filename)
+cp.spawn('systemctl', ['enable', name + '.service'], {stdio: 'inherit'}).on('exit', function () {
+  cp.spawn('systemctl', ['daemon-reload'], {stdio: 'inherit'})
+})
