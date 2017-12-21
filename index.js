@@ -69,7 +69,7 @@ options.forEach(function (pair) {
 
 var command = process.argv.slice(i).join(' ')
 var service = TEMPLATE.replace('{command}', command).replace('{options}', opts)
-var filename = '/etc/systemd/system/' + name + '.service' 
+var filename = '/etc/systemd/system/' + name + '.service'
 
 fs.writeFileSync(filename, service)
 console.log('Wrote service file to: ' + filename)
