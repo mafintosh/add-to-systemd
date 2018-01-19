@@ -49,7 +49,7 @@ if (!fs.existsSync('/etc/systemd/system/')) {
   process.exit(2)
 }
 
-var v = Number(cp.execSync('systemd --version').toString().trim().split('\n')[0].trim().split(' ').pop() || 0)
+var v = Number(cp.execSync('systemctl --version').toString().trim().split('\n')[0].trim().split(' ').pop() || 0)
 
 var opts = ''
 var uopts = ''
