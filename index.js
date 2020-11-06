@@ -25,8 +25,17 @@ for (; i < process.argv.length; i++) {
 }
 
 var argv = minimist(process.argv.slice(0, i), {
-  alias: {user: 'u', cwd: 'c', env: 'e', nice: 'n', restart: 'r', option: 'o'},
-  default: {cwd: process.cwd()}
+  alias: {
+    user: 'u',
+    cwd: 'c',
+    env: 'e',
+    nice: 'n',
+    restart: 'r',
+    option: 'o'
+  },
+  default: {
+    cwd: process.cwd()
+  }
 })
 
 var TEMPLATE = fs.readFileSync(path.join(__dirname, 'template.service'), 'utf-8')
@@ -74,7 +83,10 @@ options.forEach(function (pair) {
 })
 
 var command = process.argv.slice(i).join(' ')
-var service = TEMPLATE.replace('{command}', command).replace('{service-options}', opts).replace('{unit-options}', uopts)
+var service = TEMPLATE
+.replace('{command}', command)
+.replace('{service-options}', opts)
+.replace('{unit-options}', uopts)
 var filename = '/etc/systemd/system/' + name + '.service'
 
 fs.writeFileSync(filename, service)
