@@ -88,10 +88,10 @@ options.forEach(function (pair) {
 var after = [].concat(argv.after || []).join(' ')
 var command = process.argv.slice(i).join(' ')
 var service = TEMPLATE
-.replace('{after}', after)
-.replace('{command}', command)
-.replace('{service-options}', opts)
-.replace('{unit-options}', uopts)
+  .replace('{after}', after)
+  .replace('{command}', command)
+  .replace('{service-options}', opts)
+  .replace('{unit-options}', uopts)
 var filename = '/etc/systemd/system/' + name + '.service'
 
 fs.writeFileSync(filename, service)
