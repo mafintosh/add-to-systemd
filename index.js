@@ -25,8 +25,19 @@ for (; i < process.argv.length; i++) {
 }
 
 var argv = minimist(process.argv.slice(0, i), {
-  alias: {user: 'u', cwd: 'c', env: 'e', nice: 'n', restart: 'r', option: 'o'},
-  default: {cwd: process.cwd()}
+  alias: {
+    after: 'a',
+    user: 'u',
+    cwd: 'c',
+    env: 'e',
+    nice: 'n',
+    restart: 'r',
+    option: 'o'
+  },
+  default: {
+    after: ['syslog.target', 'network.target', 'remote-fs.target', 'nss-lookup.target'],
+    cwd: process.cwd()
+  }
 })
 
 var TEMPLATE = fs.readFileSync(path.join(__dirname, 'template.service'), 'utf-8')
@@ -34,6 +45,7 @@ var TEMPLATE = fs.readFileSync(path.join(__dirname, 'template.service'), 'utf-8'
 if (!name) {
   console.error('Usage: add-to-systemd name [options] command...')
   console.error()
+  console.error('  -a, --after          [target]    Target the service will wait for')
   console.error('  -u, --user           [user]      User the service will run as')
   console.error('  -c, --cwd            [dir]       Set the cwd of the service')
   console.error('  -n, --nice           [integer]   Set the process niceness')
@@ -73,8 +85,13 @@ options.forEach(function (pair) {
   opts += pair + '\n'
 })
 
+var after = [].concat(argv.after || []).join(' ')
 var command = process.argv.slice(i).join(' ')
-var service = TEMPLATE.replace('{command}', command).replace('{service-options}', opts).replace('{unit-options}', uopts)
+var service = TEMPLATE
+  .replace('{after}', after)
+  .replace('{command}', command)
+  .replace('{service-options}', opts)
+  .replace('{unit-options}', uopts)
 var filename = '/etc/systemd/system/' + name + '.service'
 
 fs.writeFileSync(filename, service)

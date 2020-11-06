@@ -1,5 +1,5 @@
 [Unit]
-After=syslog.target network.target remote-fs.target nss-lookup.target
+After={after}
 {unit-options}
 [Service]
 ExecStart={command}
