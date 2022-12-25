@@ -4,6 +4,7 @@ var fs = require('fs')
 var path = require('path')
 var cp = require('child_process')
 var minimist = require('minimist')
+var os = require('os')
 
 var i = 2
 var name = null
@@ -26,6 +27,7 @@ for (; i < process.argv.length; i++) {
 
 var argv = minimist(process.argv.slice(0, i), {
   alias: {
+    manager: 'm',
     after: 'a',
     user: 'u',
     cwd: 'c',
@@ -35,6 +37,7 @@ var argv = minimist(process.argv.slice(0, i), {
     option: 'o'
   },
   default: {
+    manager: 'system',
     after: ['syslog.target', 'network.target', 'remote-fs.target', 'nss-lookup.target'],
     cwd: process.cwd()
   }
@@ -45,6 +48,7 @@ var TEMPLATE = fs.readFileSync(path.join(__dirname, 'template.service'), 'utf-8'
 if (!name) {
   console.error('Usage: add-to-systemd name [options] command...')
   console.error()
+  console.error('  -m, --manager        [manager]   Connect to "system" or "user"')
   console.error('  -a, --after          [target]    Target the service will wait for')
   console.error('  -u, --user           [user]      User the service will run as')
   console.error('  -c, --cwd            [dir]       Set the cwd of the service')
@@ -52,7 +56,7 @@ if (!name) {
   console.error('  -e, --env            [name=val]  Add env vars to the service')
   console.error('  -r, --restart        [integer]   Wait this many secs when restarting')
   console.error('  -N, --no-rate-limit              Disable restart rate limits')
-  console.error('  -o, --option         [name=val]   Set any systemd option')
+  console.error('  -o, --option         [name=val]  Set any systemd option')
   console.error()
   process.exit(1)
 }
@@ -61,7 +65,10 @@ if (!fs.existsSync('/etc/systemd/system/')) {
   process.exit(2)
 }
 
-var v = Number(cp.execSync('systemctl --version').toString().trim().split('\n')[0].trim().split(' ').pop() || 0)
+var manager = argv.manager === 'system' ? 'system' : 'user'
+var location = manager === 'system' ? '/etc/systemd/system/' : (os.homedir() + '/.config/systemd/user/')
+
+var v = Number(cp.execSync('systemctl --' + manager + ' --version').toString().trim().split('\n')[0].trim().split(' ').pop() || 0)
 
 var opts = ''
 var uopts = ''
@@ -92,10 +99,12 @@ var service = TEMPLATE
   .replace('{command}', command)
   .replace('{service-options}', opts)
   .replace('{unit-options}', uopts)
-var filename = '/etc/systemd/system/' + name + '.service'
+var filename = location + name + '.service'
 
+if (manager === 'user') fs.mkdirSync(path.dirname(filename), { recursive: true })
 fs.writeFileSync(filename, service)
 console.log('Wrote service file to: ' + filename)
-cp.spawn('systemctl', ['enable', name + '.service'], {stdio: 'inherit'}).on('exit', function () {
-  cp.spawn('systemctl', ['daemon-reload'], {stdio: 'inherit'})
+
+cp.spawn('systemctl', ['--' + manager, 'enable', name + '.service'], {stdio: 'inherit'}).on('exit', function () {
+  cp.spawn('systemctl', ['--' + manager, 'daemon-reload'], {stdio: 'inherit'})
 })
